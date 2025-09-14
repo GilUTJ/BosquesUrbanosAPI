@@ -59,6 +59,7 @@ class ParkController extends Controller
         //variable que almacena los parques obtenidos de la API
         $parque = $this->apiService->obtenerParques();
         //dd($parque);
+
         return view ('index', ['parque' => $parque]);
     }
 
@@ -88,6 +89,12 @@ class ParkController extends Controller
         // Debugg para saber si esta llegando la info
         // dd($parque);
 
+            // Si la petición espera JSON (API/Postman), retorna JSON
+        if ($request->expectsJson() || $request->isJson() || $request->wantsJson()) {
+            return response()->json($parque);
+        }
+
+
          // Si la API devolvió éxito
          if($parque && isset($parque['data'] ['id'])){
             return redirect()->route('parques.index')
@@ -99,10 +106,15 @@ class ParkController extends Controller
     }
 
     //Eliminar parque
-    public function destroy($id){
+    public function destroy($id , Request $request){
         //Llamamos al servicio de la API para eliminar parque
         $status = $this->apiService->eliminarParque($id);
         // dd($status);
+
+            // Si la petición espera JSON (API/Postman), retorna JSON
+        if ($request->expectsJson() || $request->isJson() || $request->wantsJson()) {
+            return response()->json($status);
+        }
 
         // si encuentra el parque y se elimina
          if ($status === 200 || $status === 204) {
